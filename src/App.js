@@ -1,57 +1,60 @@
 import React, { Component } from 'react';
 import './App.css';
+import {connect } from 'react-redux';
+import TodoViewer from './Todo.js';
 
-// class MessagePart extends Component {
-const MessagePart = (props) => (
-      <div>
-        {props.store.getState().items.length}
-      </div>
-    )
+const OneMessage = ({msg, like}) => (
+  <div>
+    <div>userid is {msg.userId}</div>
+    <div>title is {msg.title}</div>
+    <div>{msg.liked ? 'Liked' : 'Not liked'}</div>
+    <button onClick={()=> like(msg.id)}>Like this</button>
+  </div>
+)
 
-class ClickPart extends Component {
-  handleOnClick() {
-    this.props.store.dispatch({
-      type: 'INCREASE_COUNT',
-    });
-  }
-  render() {
-    return (
-      <button onClick={(event) => this.handleOnClick(event)} >
-        Click 
-      </button>
-    )
+const MessagePart = ({msgs, showMore, like}) => (
+  <div>The number of tweets is {msgs.length}
+    <div>
+      <button onClick={showMore}>showmore</button>
+    </div>    
+    {msgs.map(msg => <OneMessage like={like} msg={msg} key={msg.id}/>)}
+  </div>
+)
+
+const mapStateToProps = state => {
+  return {
+    msgs : state.visible
   }
 }
+const mapDispatchToProps = dispatch => ({
+    showMore: () => {
+      dispatch({
+        type: 'SHOW_MORE'
+      })
+    },
+    like: (id) => {
+      dispatch({
+        type: 'LIKE',
+        id:id
+      })
+    }
+}) 
 
-
+const MessagePart2 = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MessagePart)
 
 class App extends Component {
-  componentDidMount() {
-    fetch(`http://jsonplaceholder.typicode.com/posts`)
-      .then(res => {
-        res.json().then(res => {
-          let newData = res;
-          console.log(newData)
-          let oldState = [
-            {1:"a"},
-            {2:"b"}
-          ]
-          let newState = [...newData, ...oldState]
-          console.log(newState)
-          this.props.store.dispatch({
-            type : 'ADD_POSTS',
-            payoad : newData
-          });
-          // this.setState({ posts });
-        })
-      });
-  }
+
   render() {
     return (
       <div className="App">
-        <ClickPart store={ this.props.store }/>
+        <TodoViewer/>
+        {/* <RealLoader></RealLoader> */}
+        {/* <ClickPart store={ this.props.store }/> */}
         {/* <p>{this.props.store.getState().items.length}</p> */}
-        <MessagePart store={ this.props.store }/>
+        <MessagePart2/> 
       </div>
     );
   }

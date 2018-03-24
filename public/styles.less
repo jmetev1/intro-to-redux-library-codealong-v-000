@@ -1,0 +1,25 @@
+@nice-blue: #5B83AD;
+@light-blue: @nice-blue + #111;
+
+
+header {
+  background: green
+}
+
+.post {
+  border: 3pt;
+  border-style: solid;
+  border-color: red;
+  @media (min-width: 1000px) {
+    width: 500px;
+  }
+}
+
+body {
+  background: grey;
+}
+@media (min-width:1000px) {
+  body {
+    background: yellow;
+  }
+}

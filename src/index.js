@@ -3,37 +3,21 @@ import ReactDOM from 'react-dom';
 import shoppingListItemReducer from './reducers/shoppingListItemReducer';
 import App from './App';
 import './index.css';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
+import createSagaMiddleware from 'redux-saga'
+import rootSaga from './sagas.js';
 
-const store = createStore(shoppingListItemReducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()); /* code change */
+const sagaMiddleware = createSagaMiddleware();
 
-getTweet();
+const store = createStore(shoppingListItemReducer, 
+  applyMiddleware(sagaMiddleware)
+); 
+sagaMiddleware.run(rootSaga)
 
-function render() {
-  setTimeout(() => {
-    
-    ReactDOM.render(
-      <Provider store={store}>
-    <App/>
+ReactDOM.render(
+  <Provider store={store}>
+    <App store={store}/>
   </Provider>,
   document.getElementById('root')
 );
-}, 1000);
-}
-render();
-store.subscribe(render);
-
-function getTweet() {
-  
-  fetch(`http://jsonplaceholder.typicode.com/posts`).then(res => {
-    res.json().then(res => {
-      res = res.map(t => Object.assign({}, t, {liked: false}))
-      let newData = res;
-      store.dispatch({
-        type : 'ADD_POSTS',
-        payload : newData
-      });
-    })
-  });
-}

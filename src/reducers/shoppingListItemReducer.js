@@ -1,20 +1,28 @@
 let defaultState = {
   visible: [],
-  extra: []
+  extra: [],
+  todos: []
 };
+ /* eslint-disable */ 
 export default function shoppingListItemReducer(state = defaultState, action) {
+  console.log('incoming action')
   console.log(action)
-  console.table(action)
   switch (action.type) {
-    case 'SHOW_MORE':
+    case 'FETCHED_TODOS': {
+      return Object.assign({}, state, {todos: action.data})
+    }
+    case 'SHOW_MORE': {
       let visible = [...state.visible.slice(), ...state.extra.slice(0, 10)];
       let extra = state.extra.slice(10, state.extra.length);
-      let newState = {extra, visible};
-      return newState
+      let newState = {extra, visible, todos: state.todos.slice()};
+      return newState;
+      break;
+    }
     case 'ADD_POSTS':
       return {
         visible: action.payload.slice(0, 10), 
-        extra: action.payload.slice(10, action.payload.length)
+        extra: action.payload.slice(10, action.payload.length),
+        todos: state.todos.slice()
       }; 
     case 'LIKE':
       let index;
@@ -32,8 +40,11 @@ export default function shoppingListItemReducer(state = defaultState, action) {
       let visible1 = firstHalf.concat([copy]).concat(secondHalf);
       let newState2= {
         visible: visible1, 
-        extra: state.extra.slice()}
+        todos: state.todos.slice(),
+        extra: state.extra.slice()
+      }
       return newState2;
     default: return state;
   }
 }
+//
